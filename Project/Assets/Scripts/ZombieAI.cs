@@ -16,6 +16,6 @@ public class ZombieAI : MonoBehaviour
 
     void UpdatePath()
     {
-
+        //iupa
     }
 }
