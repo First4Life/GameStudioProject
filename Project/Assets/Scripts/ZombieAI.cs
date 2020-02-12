@@ -9,6 +9,7 @@ public class ZombieAI : MonoBehaviour
     NavMeshAgent pathFinding;
 
     float distanceToPlayer;
+    Vector3 oldPlayerPos;
 
     void Start()
     {
@@ -27,10 +28,16 @@ public class ZombieAI : MonoBehaviour
 
     void UpdatePath()
     {
-        Vector3 differencePosition = this.transform.position - playerPos.position;
-        Vector3 targetDirection = differencePosition.normalized;
-        Vector3 targetPosition = playerPos.position + (targetDirection * 2f);
+        if (playerPos.position != oldPlayerPos)
+        {
+            Vector3 differencePosition = this.transform.position - playerPos.position;
+            Vector3 targetDirection = differencePosition.normalized;
+            Vector3 targetPosition = playerPos.position + (targetDirection * 2f);
 
-        pathFinding.SetDestination(targetPosition);
+            pathFinding.SetDestination(targetPosition);
+            oldPlayerPos = playerPos.position;
+
+            Debug.Log("Created new path to player");
+        }
     }
 }
