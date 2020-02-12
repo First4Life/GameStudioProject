@@ -19,9 +19,13 @@ public class ZombieAI : MonoBehaviour
     void Update()
     {
         distanceToPlayer = Vector3.Distance(this.transform.position, playerPos.position);
-
+        if(distanceToPlayer > 15f)
+        {
+            pathFinding.speed = 10f;
+        }
         if (distanceToPlayer > 2f)
         {
+            pathFinding.speed = 3.5f;
             UpdatePath();
         }
     }
