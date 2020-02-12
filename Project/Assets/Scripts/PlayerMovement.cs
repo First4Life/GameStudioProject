@@ -14,12 +14,20 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundMask;
 
     Vector3 velocity;
-    bool isGerounded;
+    bool isGrounded;
 
     // Update is called once per frame
     void Update()
     {
-        //isGround = Physics.CheckSphere(groundCheck.position, groundDistance, )
+        // Need to add a "Ground" layer to all the floor
+        // Set groundCheck as ""
+        // Set groundMask to "Ground"
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
 
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
