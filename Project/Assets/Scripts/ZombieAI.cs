@@ -7,6 +7,7 @@ public class ZombieAI : MonoBehaviour
 {
     public Transform playerPos;
     NavMeshAgent pathFinding;
+    NavMeshObstacle obstacle;
 
     float distanceToPlayer;
     Vector3 oldPlayerPos;
@@ -14,6 +15,11 @@ public class ZombieAI : MonoBehaviour
     void Start()
     {
         pathFinding = GetComponent<NavMeshAgent>();
+        obstacle = GetComponent<NavMeshObstacle>();
+
+        obstacle.enabled = false;
+
+        UpdatePath();
     }
     
     void Update()
@@ -25,8 +31,24 @@ public class ZombieAI : MonoBehaviour
         }
         if (distanceToPlayer > 2f)
         {
+            obstacle.enabled = false;
+            pathFinding.enabled = true;
+
             pathFinding.speed = 3.5f;
-            UpdatePath();
+            StartCoroutine(WaitTimeToUpdate());
+
+            if(pathFinding.pathStatus == NavMeshPathStatus.PathPartial)
+            {
+                pathFinding.enabled = false;
+                obstacle.enabled = true;
+
+                UpdatePath();
+            }
+        }
+        else
+        {
+            obstacle.enabled = true;
+            pathFinding.enabled = false;
         }
     }
 
@@ -34,14 +56,18 @@ public class ZombieAI : MonoBehaviour
     {
         if (playerPos.position != oldPlayerPos)
         {
-            Vector3 differencePosition = this.transform.position - playerPos.position;
+            /*Vector3 differencePosition = this.transform.position - playerPos.position;
             Vector3 targetDirection = differencePosition.normalized;
-            Vector3 targetPosition = playerPos.position + (targetDirection * 2f);
+            Vector3 targetPosition = playerPos.position + (targetDirection * 2f);*/
 
-            pathFinding.SetDestination(targetPosition);
+            pathFinding.SetDestination(playerPos.position);
             oldPlayerPos = playerPos.position;
-
-            Debug.Log("Created new path to player");
         }
+    }
+
+    IEnumerator WaitTimeToUpdate()
+    {
+        yield return new WaitForSeconds(5f);
+        UpdatePath();
     }
 }
