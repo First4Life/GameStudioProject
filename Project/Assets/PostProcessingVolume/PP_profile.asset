@@ -73,8 +73,8 @@ MonoBehaviour:
     m_Enabled: 1
     m_Settings:
       focusDistance: 15.07
-      aperture: 9.2
-      focalLength: 104
+      aperture: 5.2
+      focalLength: 95
       useCameraFov: 0
       kernelSize: 3
   motionBlur:
@@ -135,9 +135,9 @@ MonoBehaviour:
       colorWheels:
         mode: 1
         log:
-          slope: {r: 1, g: 0.7509012, b: 0.32929856, a: 0}
-          power: {r: 1, g: 0.6466281, b: 0.10437387, a: 0}
-          offset: {r: 0.6197039, g: 0.7243327, b: 1, a: 0}
+          slope: {r: 1, g: 0.4598428, b: 0.3071494, a: 0}
+          power: {r: 0.48778325, g: 0.51049894, b: 1, a: 0}
+          offset: {r: 0.6054772, g: 1, b: 0.8048522, a: 0}
         linear:
           lift: {r: 0, g: 0, b: 0, a: 0}
           gamma: {r: 0, g: 0, b: 0, a: 0}
@@ -323,8 +323,8 @@ MonoBehaviour:
       mode: 0
       color: {r: 0, g: 0, b: 0, a: 1}
       center: {x: 0.5, y: 0.5}
-      intensity: 0.45
-      smoothness: 0.2
+      intensity: 0.456
+      smoothness: 0.325
       roundness: 1
       mask: {fileID: 0}
       opacity: 1
