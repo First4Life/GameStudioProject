@@ -1,5 +1,15 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 1a8e8d6010568e94f81a7f8f11e64608
+=======
+<<<<<<< HEAD:Project/Assets/PostProcessingVolume/PostProcessing Volume/Example/ExampleSceneScripts/MouseCamera.cs.meta
+guid: 756d74e2db6113a4e8a8ca12b9c89415
+timeCreated: 1495442009
+licenseType: Store
+=======
+guid: 1a8e8d6010568e94f81a7f8f11e64608
+>>>>>>> 4c7cb699c913b9dfab42d55de1993d44ef2d37e9:Project/Assets/Scripts/PlayerEventManager.cs.meta
+>>>>>>> 4c7cb699c913b9dfab42d55de1993d44ef2d37e9
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
