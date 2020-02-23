@@ -12,6 +12,12 @@ public class ZombieAI : MonoBehaviour
     float distanceToPlayer;
     Vector3 oldPlayerPos;
 
+    NavMeshPath currentPath;
+    float range = 10.0f;
+
+    const float movementThreshold = 0.5f;
+    Vector3 closestPosition;
+
     void Start()
     {
         pathFinding = GetComponent<NavMeshAgent>();
@@ -19,55 +25,91 @@ public class ZombieAI : MonoBehaviour
 
         obstacle.enabled = false;
 
-        UpdatePath();
+        StartCoroutine(UpdatePath());
     }
     
     void Update()
     {
         distanceToPlayer = Vector3.Distance(this.transform.position, playerPos.position);
-        if(distanceToPlayer > 15f)
-        {
-            pathFinding.speed = 10f;
-        }
+
         if (distanceToPlayer > 2f)
         {
             obstacle.enabled = false;
             pathFinding.enabled = true;
 
             pathFinding.speed = 3.5f;
-            StartCoroutine(WaitTimeToUpdate());
+            StartCoroutine(UpdatePath());
 
             if(pathFinding.pathStatus == NavMeshPathStatus.PathPartial)
             {
-                pathFinding.enabled = false;
-                obstacle.enabled = true;
+                if (pathFinding.velocity.x >= movementThreshold && pathFinding.velocity.y >= movementThreshold && pathFinding.velocity.z >= movementThreshold)
+                {
+                    if (closestPosition == null)
+                    {
+                        if (RandomPoint(playerPos.position, range, out closestPosition))
+                        {
+                            Debug.DrawRay(closestPosition, Vector3.up, Color.blue, 1.0f);
 
-                UpdatePath();
+                            currentPath = new NavMeshPath();
+                            pathFinding.CalculatePath(closestPosition, currentPath);
+
+                            pathFinding.SetPath(currentPath);
+                        }
+                    }
+                }
+                else
+                {
+                    pathFinding.velocity = new Vector3(0,0,0);
+
+                    Vector3 targetRotation = playerPos.position - transform.position;
+                    Vector3 newRotation = Vector3.RotateTowards(transform.forward, targetRotation, 5.0f * Time.deltaTime, 0.0f);
+                    transform.rotation = Quaternion.LookRotation(newRotation);
+
+                    StartCoroutine(UpdatePath());
+
+                }
             }
         }
         else
         {
             obstacle.enabled = true;
             pathFinding.enabled = false;
+
+            Vector3 targetRotation = playerPos.position - transform.position;
+            Vector3 newRotation = Vector3.RotateTowards(transform.forward, targetRotation, 5.0f * Time.deltaTime, 0.0f);
+            transform.rotation = Quaternion.LookRotation(newRotation);
         }
     }
 
-    void UpdatePath()
+    IEnumerator UpdatePath()
     {
+        yield return 0;
         if (playerPos.position != oldPlayerPos)
         {
-            /*Vector3 differencePosition = this.transform.position - playerPos.position;
-            Vector3 targetDirection = differencePosition.normalized;
-            Vector3 targetPosition = playerPos.position + (targetDirection * 2f);*/
+            pathFinding.enabled = true;
+            obstacle.enabled = false;
 
-            pathFinding.SetDestination(playerPos.position);
+            currentPath = new NavMeshPath();
+
+            pathFinding.CalculatePath(playerPos.position, currentPath);
+            pathFinding.SetPath(currentPath);
             oldPlayerPos = playerPos.position;
         }
     }
 
-    IEnumerator WaitTimeToUpdate()
+    bool RandomPoint(Vector3 center, float range, out Vector3 result)
     {
-        yield return new WaitForSeconds(5f);
-        UpdatePath();
+        for (int i = 0; i < 30; i++)
+        {
+            Vector3 randomPoint = center + Random.insideUnitSphere * range;
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas))
+            {
+                result = hit.position;
+                return true;
+            }
+        }
+        result = Vector3.zero;
+        return false;
     }
 }
