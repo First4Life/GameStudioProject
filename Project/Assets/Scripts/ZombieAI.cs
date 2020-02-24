@@ -23,11 +23,14 @@ public class ZombieAI : MonoBehaviour
 
     void Start()
     {
+        playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+
         pathFinding = GetComponent<NavMeshAgent>();
         obstacle = GetComponent<NavMeshObstacle>();
 
         obstacle.enabled = false;
 
+        ScaleZombie();
         StartCoroutine(UpdatePath());
     }
     
@@ -123,8 +126,9 @@ public class ZombieAI : MonoBehaviour
 
     void ScaleZombie()
     {
-        int round = 1;
-        maxHealth = 100 * Mathf.Sqrt(round);
+        RoundSystem system = GameObject.FindObjectOfType<RoundSystem>();
+
+        maxHealth = 100 * Mathf.Sqrt(system.currentRound);
         health = maxHealth;
     }
 }
