@@ -18,6 +18,9 @@ public class ZombieAI : MonoBehaviour
     const float movementThreshold = 0.5f;
     Vector3 closestPosition;
 
+    public float health = 100, maxHealth = 100;
+    public float speed = 1f;
+
     void Start()
     {
         pathFinding = GetComponent<NavMeshAgent>();
@@ -37,7 +40,7 @@ public class ZombieAI : MonoBehaviour
             obstacle.enabled = false;
             pathFinding.enabled = true;
 
-            pathFinding.speed = 3.5f;
+            pathFinding.speed = speed;
             StartCoroutine(UpdatePath());
 
             if(pathFinding.pathStatus == NavMeshPathStatus.PathPartial)
@@ -46,7 +49,7 @@ public class ZombieAI : MonoBehaviour
                 {
                     if (closestPosition == null)
                     {
-                        if (RandomPoint(playerPos.position, range, out closestPosition))
+                        if (FindRandomPoint(playerPos.position, range, out closestPosition))
                         {
                             Debug.DrawRay(closestPosition, Vector3.up, Color.blue, 1.0f);
 
@@ -97,7 +100,7 @@ public class ZombieAI : MonoBehaviour
         }
     }
 
-    bool RandomPoint(Vector3 center, float range, out Vector3 result)
+    bool FindRandomPoint(Vector3 center, float range, out Vector3 result)
     {
         for (int i = 0; i < 30; i++)
         {
@@ -111,5 +114,17 @@ public class ZombieAI : MonoBehaviour
         }
         result = Vector3.zero;
         return false;
+    }
+
+    public void AdjustHealth(int amount)
+    {
+        health += amount;
+    }
+
+    void ScaleZombie()
+    {
+        int round = 1;
+        maxHealth = 100 * Mathf.Sqrt(round);
+        health = maxHealth;
     }
 }
