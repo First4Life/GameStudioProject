@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class ZombieAI : MonoBehaviour
 {
     public Transform playerPos;
+    PlayerStatus playerStats;
     NavMeshAgent pathFinding;
     NavMeshObstacle obstacle;
 
@@ -20,10 +21,16 @@ public class ZombieAI : MonoBehaviour
 
     public float health = 100, maxHealth = 100;
     public float speed = 1f;
+    public int damagePerHit = 20;
+
+    bool onCooldown = false;
+    bool canAttack = true;
+    bool stoppedToAttack = false;
 
     void Start()
     {
         playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        playerStats = playerPos.gameObject.GetComponent<PlayerStatus>();
 
         pathFinding = GetComponent<NavMeshAgent>();
         obstacle = GetComponent<NavMeshObstacle>();
@@ -40,6 +47,8 @@ public class ZombieAI : MonoBehaviour
 
         if (distanceToPlayer > 2f)
         {
+            stoppedToAttack = false;
+            
             obstacle.enabled = false;
             pathFinding.enabled = true;
 
@@ -84,6 +93,25 @@ public class ZombieAI : MonoBehaviour
             Vector3 targetRotation = playerPos.position - transform.position;
             Vector3 newRotation = Vector3.RotateTowards(transform.forward, targetRotation, 5.0f * Time.deltaTime, 0.0f);
             transform.rotation = Quaternion.LookRotation(newRotation);
+
+            if (pathFinding.velocity.x == 0 && pathFinding.velocity.y == 0 && pathFinding.velocity.z == 0)
+            {
+                if (!stoppedToAttack)
+                {
+                    StartCoroutine(TimeBeforeCanAttack());
+                }
+                else if(canAttack && stoppedToAttack)
+                {
+                    AttackPlayer();
+                }
+                else if(!canAttack)
+                {
+                    if (!onCooldown)
+                    {
+                        StartCoroutine(AttackPlayerCooldown());
+                    }
+                }
+            }
         }
     }
 
@@ -130,5 +158,29 @@ public class ZombieAI : MonoBehaviour
 
         maxHealth = 100 * Mathf.Sqrt(system.currentRound);
         health = maxHealth;
+
+        speed = 5f; //temp
+    }
+
+    void AttackPlayer()
+    {
+        playerStats.PlayerHealh -= damagePerHit;
+        canAttack = false;
+        onCooldown = true;
+    }
+
+    IEnumerator TimeBeforeCanAttack()
+    {
+        yield return new WaitForSeconds(0.5f);
+        stoppedToAttack = true;
+    }
+
+    IEnumerator AttackPlayerCooldown()
+    {
+        onCooldown = true;
+
+        yield return new WaitForSeconds(1f);
+        canAttack = true;
+        onCooldown = false;
     }
 }
