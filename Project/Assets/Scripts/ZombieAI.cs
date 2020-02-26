@@ -118,6 +118,8 @@ public class ZombieAI : MonoBehaviour
         }
         else
         {
+            pathFinding.velocity = new Vector3(0, 0, 0);
+
             pathFinding.enabled = false;
             obstacle.enabled = true;
         }
