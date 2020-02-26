@@ -122,6 +122,8 @@ public class ZombieAI : MonoBehaviour
 
             pathFinding.enabled = false;
             obstacle.enabled = true;
+
+            StartCoroutine(DespawnZombie());
         }
     }
 
@@ -192,5 +194,11 @@ public class ZombieAI : MonoBehaviour
         yield return new WaitForSeconds(1f);
         canAttack = true;
         onCooldown = false;
+    }
+    
+    IEnumerator DespawnZombie()
+    {
+        yield return new WaitForSeconds(10f);
+        Destroy(this.gameObject);
     }
 }
