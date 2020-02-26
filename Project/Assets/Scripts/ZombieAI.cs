@@ -45,73 +45,81 @@ public class ZombieAI : MonoBehaviour
     {
         distanceToPlayer = Vector3.Distance(this.transform.position, playerPos.position);
 
-        if (distanceToPlayer > 2f)
+        if (health > 0)
         {
-            stoppedToAttack = false;
-            
-            obstacle.enabled = false;
-            pathFinding.enabled = true;
-
-            pathFinding.speed = speed;
-            StartCoroutine(UpdatePath());
-
-            if(pathFinding.pathStatus == NavMeshPathStatus.PathPartial)
+            if (distanceToPlayer > 2f)
             {
-                if (pathFinding.velocity.x >= movementThreshold && pathFinding.velocity.y >= movementThreshold && pathFinding.velocity.z >= movementThreshold)
+                stoppedToAttack = false;
+
+                obstacle.enabled = false;
+                pathFinding.enabled = true;
+
+                pathFinding.speed = speed;
+                StartCoroutine(UpdatePath());
+
+                if (pathFinding.pathStatus == NavMeshPathStatus.PathPartial)
                 {
-                    if (closestPosition == null)
+                    if (pathFinding.velocity.x >= movementThreshold && pathFinding.velocity.y >= movementThreshold && pathFinding.velocity.z >= movementThreshold)
                     {
-                        if (FindRandomPoint(playerPos.position, range, out closestPosition))
+                        if (closestPosition == null)
                         {
-                            Debug.DrawRay(closestPosition, Vector3.up, Color.blue, 1.0f);
+                            if (FindRandomPoint(playerPos.position, range, out closestPosition))
+                            {
+                                Debug.DrawRay(closestPosition, Vector3.up, Color.blue, 1.0f);
 
-                            currentPath = new NavMeshPath();
-                            pathFinding.CalculatePath(closestPosition, currentPath);
+                                currentPath = new NavMeshPath();
+                                pathFinding.CalculatePath(closestPosition, currentPath);
 
-                            pathFinding.SetPath(currentPath);
+                                pathFinding.SetPath(currentPath);
+                            }
                         }
                     }
+                    else
+                    {
+                        pathFinding.velocity = new Vector3(0, 0, 0);
+
+                        Vector3 targetRotation = playerPos.position - transform.position;
+                        Vector3 newRotation = Vector3.RotateTowards(transform.forward, targetRotation, 5.0f * Time.deltaTime, 0.0f);
+                        transform.rotation = Quaternion.LookRotation(newRotation);
+
+                        StartCoroutine(UpdatePath());
+
+                    }
                 }
-                else
+            }
+            else
+            {
+                obstacle.enabled = true;
+                pathFinding.enabled = false;
+
+                Vector3 targetRotation = playerPos.position - transform.position;
+                Vector3 newRotation = Vector3.RotateTowards(transform.forward, targetRotation, 5.0f * Time.deltaTime, 0.0f);
+                transform.rotation = Quaternion.LookRotation(newRotation);
+
+                if (pathFinding.velocity.x == 0 && pathFinding.velocity.y == 0 && pathFinding.velocity.z == 0)
                 {
-                    pathFinding.velocity = new Vector3(0,0,0);
-
-                    Vector3 targetRotation = playerPos.position - transform.position;
-                    Vector3 newRotation = Vector3.RotateTowards(transform.forward, targetRotation, 5.0f * Time.deltaTime, 0.0f);
-                    transform.rotation = Quaternion.LookRotation(newRotation);
-
-                    StartCoroutine(UpdatePath());
-
+                    if (!stoppedToAttack)
+                    {
+                        StartCoroutine(TimeBeforeCanAttack());
+                    }
+                    else if (canAttack && stoppedToAttack)
+                    {
+                        AttackPlayer();
+                    }
+                    else if (!canAttack)
+                    {
+                        if (!onCooldown)
+                        {
+                            StartCoroutine(AttackPlayerCooldown());
+                        }
+                    }
                 }
             }
         }
         else
         {
-            obstacle.enabled = true;
             pathFinding.enabled = false;
-
-            Vector3 targetRotation = playerPos.position - transform.position;
-            Vector3 newRotation = Vector3.RotateTowards(transform.forward, targetRotation, 5.0f * Time.deltaTime, 0.0f);
-            transform.rotation = Quaternion.LookRotation(newRotation);
-
-            if (pathFinding.velocity.x == 0 && pathFinding.velocity.y == 0 && pathFinding.velocity.z == 0)
-            {
-                if (!stoppedToAttack)
-                {
-                    StartCoroutine(TimeBeforeCanAttack());
-                }
-                else if(canAttack && stoppedToAttack)
-                {
-                    AttackPlayer();
-                }
-                else if(!canAttack)
-                {
-                    if (!onCooldown)
-                    {
-                        StartCoroutine(AttackPlayerCooldown());
-                    }
-                }
-            }
+            obstacle.enabled = true;
         }
     }
 
