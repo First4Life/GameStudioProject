@@ -59,8 +59,18 @@ public class GunInteraction : MonoBehaviour
 
         if(Input.GetKeyDown("1"))
         {
-            saveCurrentAmmo();
+            saveCurrentAmmo(1);
             switchGun(slot1Gun);
+        }
+        if (Input.GetKeyDown("2"))
+        {
+            saveCurrentAmmo(2);
+            switchGun(slot2Gun);
+        }
+        if (Input.GetKeyDown("3"))
+        {
+            saveCurrentAmmo(3);
+            switchGun(slot3Gun);
         }
 
 
@@ -102,7 +112,7 @@ public class GunInteraction : MonoBehaviour
 
     }
 
-    void saveCurrentAmmo()
+    void saveCurrentAmmo(int _currentSlot)
     {
         // switch....
         switch(currentSlot)
