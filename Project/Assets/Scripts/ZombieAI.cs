@@ -168,7 +168,8 @@ public class ZombieAI : MonoBehaviour
     {
         RoundSystem system = GameObject.FindObjectOfType<RoundSystem>();
 
-        maxHealth = 100 * Mathf.Sqrt(system.currentRound);
+        //maxHealth = 100 * Mathf.Sqrt(system.currentRound);
+        maxHealth = 50 * (Mathf.Sqrt(system.currentRound) * 2);
         health = maxHealth;
 
         speed = 5f; //temp
